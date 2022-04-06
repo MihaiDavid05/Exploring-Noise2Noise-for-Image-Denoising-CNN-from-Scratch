@@ -3,9 +3,6 @@ import json
 import argparse
 
 
-CONFIG_PATH = "configs/"
-
-
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("config_path", help="Path to config")
