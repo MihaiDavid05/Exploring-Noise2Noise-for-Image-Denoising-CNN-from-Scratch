@@ -1,4 +1,44 @@
 {
   "train_data": "data/train_data.pkl",
-  "val_data": "data/val_data.pkl"
+  "val_data": "data/val_data.pkl",
+  "augmentations": {
+    "rotation": [
+      45,
+      90,
+      135,
+      180,
+      225,
+      270,
+      315
+    ],
+    "horizontal_flip": 0.5,
+    "vertical_flip": 0.5,
+    "brightness": [
+      -50,
+      50
+    ],
+    "contrast": [
+      0.5,
+      1.5
+    ],
+    "saturation": [
+      0.5,
+      1.5
+    ],
+    "hue": [
+      -10,
+      10
+    ],
+    "erasing": 0.5,
+    "perspective": 0.5,
+    "translate": [
+      -0.1,
+      0.1
+    ],
+    "scale": [
+      0.9,
+      1.1
+    ],
+    "normalize": true
+  }
 }
