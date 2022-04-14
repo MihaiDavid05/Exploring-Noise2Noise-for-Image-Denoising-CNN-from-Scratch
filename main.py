@@ -17,6 +17,6 @@ if __name__ == "__main__":
         config = json.load(json_config)
 
     noisy_imgs_1, noisy_imgs_2 = torch.load(config["train_data"])
-    noisy_imgs , clean_imgs = torch.load(config["train_data"])
+    noisy_imgs , clean_imgs = torch.load(config["val_data"])
 
     print(noisy_imgs_1.shape)
