@@ -17,7 +17,12 @@ class Model:
         # which only differs from the input by their noise .
         pass
 
-    def predict (self, test_input) -> torch.Tensor :
+    def predict(self, test_input) -> torch.Tensor:
         #: test_input : tensor of size (N1 , C, H, W) that has to be denoised by the trained or the loaded network.
         #: returns a tensor of the size (N1 , C, H, W)
         pass
+
+
+class ModelConfig(Model):
+    def __init__(self, config):
+        super().__init__()
