@@ -1,6 +1,12 @@
 {
   "train_data": "data/train_data.pkl",
   "val_data": "data/val_data.pkl",
+  "log_dir": "logs/log_file1.txt",
+  "model": "unet",
+  "dataset": "basic",
+  "batch_size": 2,
+  "epochs": 100,
+  "checkpoint_dir": "checkpoints",
   "augmentations": {
     "rotation": [
       45,

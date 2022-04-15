@@ -1,6 +1,9 @@
 import torch
 import json
 import argparse
+from Miniproject_1.others.network import build_network
+from Miniproject_1.others.dataset import build_dataset
+from Miniproject_1.others.train import train
 
 
 def get_args():
@@ -13,10 +16,20 @@ def get_args():
 if __name__ == "__main__":
     args = get_args()
 
+    # Get config
     with open(args.config_path) as json_config:
         config = json.load(json_config)
 
-    noisy_imgs_1, noisy_imgs_2 = torch.load(config["train_data"])
-    noisy_imgs , clean_imgs = torch.load(config["val_data"])
+    # Get device
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
-    print(noisy_imgs_1.shape)
+    # Get network
+    net = build_network(config)
+
+    # Get dataset
+    train_dataset = build_dataset(config, config["train_data"])
+    val_dataset = build_dataset(config, config["val_data"])
+
+    # Train network
+    train(train_dataset, val_dataset, net, config, device=device)
