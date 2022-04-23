@@ -4,6 +4,7 @@ import argparse
 from Miniproject_1.others.network import build_network
 from Miniproject_1.others.dataset import build_dataset
 from Miniproject_1.others.train import train
+from torch.utils.tensorboard import SummaryWriter
 
 
 def get_args():
@@ -28,8 +29,9 @@ if __name__ == "__main__":
     net = build_network(config)
 
     # Get dataset
-    train_dataset = build_dataset(config, config["train_data"])
+    train_dataset = build_dataset(config, config["train_data"], train=True)
     val_dataset = build_dataset(config, config["val_data"])
 
     # Train network
-    train(train_dataset, val_dataset, net, config, device=device)
+    writer = SummaryWriter(log_dir=config["log_dir"])
+    train(train_dataset, val_dataset, net, config, writer,  device=device)

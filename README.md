@@ -1,12 +1,26 @@
 # DL_project
 
-### 1.Dependencies
+### 1.Folders
+You may need to create ```logs``` and ```checkpoints``` folders under root directory. They are gitignored.
+
+Also, you need the train and val pickles under the ```data``` folder, also created under root directory. 
+### 2.Dependencies
 To install PyTorch (CPU only) use the following command:
 ```bash
-conda install pytorch==1.9.0 torchvision torchaudio cpuonly -c pytorch
+pip install pytorch==1.9.0 torchvision torchaudio cpuonly -c pytorch
 ```
-You can also import the already created conda environment by running:
+
+Other installations:
 ```bash
-conda env create -f environment.yml
+pip install tensorboard
 ```
-*Note: The above is not guaranteed to work!*
+
+You may encouter an error with tensorboard. Install this:
+```bash
+pip install setuptools==59.5.0
+```
+
+To run Tensorboard, run this:
+```bash
+python -m tensorboard.main --logdir=logs/<log_folder_wanted>
+```
