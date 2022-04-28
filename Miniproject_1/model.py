@@ -8,8 +8,7 @@ class Model:
 
     def load_pretrained_model(self) -> None:
         # This loads the parameters saved in bestmodel.pth into the model (pickle format)
-        model_state_dict = torch.load('bestmodel.pth')
-        return model_state_dict
+        net.load_state_dict(torch.load('checkpoints/bestmodel.pth'))
 
     def train(self, train_input, train_target, num_epochs) -> None:
         #: train_input : tensor of size (N, C, H, W) containing a noisy version of the images.

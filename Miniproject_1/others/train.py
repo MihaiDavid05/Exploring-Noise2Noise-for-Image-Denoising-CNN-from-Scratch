@@ -34,9 +34,6 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             # Forward pass
             optimizer.zero_grad()
             preds = net(images)
-
-            xxx = preds[0].detach().cpu().numpy()
-            yyy = targets[0].detach().cpu().numpy()
             # Compute loss
             loss = criterion(preds, targets)
             writer.add_scalar("Lr", optimizer.param_groups[0]['lr'], global_step)
@@ -66,10 +63,6 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             with torch.no_grad():
                 # Forward pass
                 preds = net(images)
-                # Add prediction to tensorboard
-                writer.add_image("Prediction", preds[0].float().detach().cpu(), i)
-                writer.add_image("Target", images[0].float().detach().cpu(), i)
-                writer.add_image("Image", targets[0].float().detach().cpu(), i)
                 # Compute validation loss
                 loss = criterion(preds, targets)
                 val_loss += loss.item()
@@ -101,6 +94,23 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             print("Current maximum validation score is: {}\n".format(max_val_score))
             torch.save(net.state_dict(), checkpoint_dir + '/bestmodel.pth')
             print(f'Checkpoint {epoch} saved!\n')
+            # Add images to tensorboard
+            writer.add_image("Prediction0", torch.clamp(preds[0], 0, 1).float().detach().cpu(), global_step)
+            writer.add_image("Target0", targets[0].float().detach().cpu(), global_step)
+            writer.add_image("Image0", images[0].float().detach().cpu(), global_step)
         print('Validation PNR score is: {}\n'.format(val_score))
 
         writer.add_scalar("PSNR/val", val_score, global_step)
+
+
+def predict(test_image, net, device='cpu'):
+    test_image = test_image / 255.0
+    test_image = test_image.to(device=device, dtype=torch.float32)
+    # Load model
+    net.load_state_dict(torch.load('checkpoints/bestmodel.pth'))
+    net.eval()
+    with torch.no_grad():
+        pred = net(test_image)
+    return pred
+
+

@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     # Get network
     net = build_network(config)
-    # net.to(device=device)
+    net.to(device=device)
 
     # Get dataset
     train_dataset = build_dataset(config, config["train_data"], train=True)
