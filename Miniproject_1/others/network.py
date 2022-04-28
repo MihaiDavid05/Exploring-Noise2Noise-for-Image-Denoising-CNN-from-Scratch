@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-
 # REF: https://github.com/joeylitalien/noise2noise-pytorch
 # REF: Noise2Noise paper: https://arxiv.org/pdf/1803.04189.pdf
+
 
 class UNetSmall(nn.Module):
     def __init__(self, in_channels, out_channels, nearest, cut_last_convblock):

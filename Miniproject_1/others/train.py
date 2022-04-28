@@ -67,6 +67,10 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
                 val_loss += loss.item()
                 # Compute PSNR
                 val_score += psnr(preds, targets)
+                # Add images to tensorboard
+                writer.add_image("Prediction0", torch.clamp(preds[0], 0, 1).float().detach().cpu(), global_step)
+                writer.add_image("Target0", targets[0].float().detach().cpu(), global_step)
+                writer.add_image("Image0", images[0].float().detach().cpu(), global_step)
 
         net.train()
         # Update validation loss
@@ -93,10 +97,6 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             print("Current maximum validation score is: {}\n".format(max_val_score))
             torch.save(net.state_dict(), checkpoint_dir + '/bestmodel.pth')
             print(f'Checkpoint {epoch} saved!\n')
-            # Add images to tensorboard
-            writer.add_image("Prediction0", torch.clamp(preds[0], 0, 1).float().detach().cpu(), global_step)
-            writer.add_image("Target0", targets[0].float().detach().cpu(), global_step)
-            writer.add_image("Image0", images[0].float().detach().cpu(), global_step)
 
         print('Validation PNR score is: {}\n'.format(val_score))
 
