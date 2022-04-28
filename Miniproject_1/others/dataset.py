@@ -21,8 +21,8 @@ class BaseDataset:
 
     def __getitem__(self, idx):
         return {
-            'image': self.noisy_tensor_train[idx].float(),
-            'target':  self.noisy_tensor_target[idx].float(),
+            'image': (self.noisy_tensor_train[idx] / 255.0).float(),
+            'target':  (self.noisy_tensor_target[idx] / 255.0).float(),
         }
 
 

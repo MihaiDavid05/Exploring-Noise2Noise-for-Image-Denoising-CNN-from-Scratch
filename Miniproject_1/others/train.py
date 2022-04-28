@@ -18,7 +18,8 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
     criterion = nn.MSELoss()
     global_step = 0
     max_val_score = 0
-
+    best_val_loss = 10000
+    patience = 0
     # Train
     print("Training started !\n")
 
@@ -28,11 +29,14 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
         epoch_loss = 0
         for batch in tqdm(train_loader):
             # Get image and target
-            images = batch['image']
-            targets = batch['target']
+            images = batch['image'].to(device=device, dtype=torch.float32)
+            targets = batch['target'].to(device=device, dtype=torch.float32)
             # Forward pass
             optimizer.zero_grad()
             preds = net(images)
+
+            xxx = preds[0].detach().cpu().numpy()
+            yyy = targets[0].detach().cpu().numpy()
             # Compute loss
             loss = criterion(preds, targets)
             writer.add_scalar("Lr", optimizer.param_groups[0]['lr'], global_step)
@@ -55,15 +59,17 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
         val_loss = 0
         for i, batch in tqdm(enumerate(val_loader)):
             # Get image and gt masks
-            images = batch['image']
-            targets = batch['target']
+            images = batch['image'].to(device=device, dtype=torch.float32)
+            targets = batch['target'].to(device=device, dtype=torch.float32)
             writer.add_image("Target", targets[0], i)
 
             with torch.no_grad():
                 # Forward pass
                 preds = net(images)
                 # Add prediction to tensorboard
-                writer.add_image("Prediction", preds[0], i)
+                writer.add_image("Prediction", preds[0].float().detach().cpu(), i)
+                writer.add_image("Target", images[0].float().detach().cpu(), i)
+                writer.add_image("Image", targets[0].float().detach().cpu(), i)
                 # Compute validation loss
                 loss = criterion(preds, targets)
                 val_loss += loss.item()
@@ -73,6 +79,18 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
         net.train()
         # Update validation loss
         val_loss = val_loss / len(val_loader)
+
+        # Implement early stopping
+        if val_loss > best_val_loss:
+            patience += 1
+        else:
+            best_val_loss = val_loss
+            patience = 0
+
+        if patience == 10:
+            print("Training stopped due to early stopping with patience {}.".format(patience))
+            break
+
         print(f'\nEpoch: {epoch} -> val_loss: {val_loss}\n')
         val_score = val_score / num_val_batches
 

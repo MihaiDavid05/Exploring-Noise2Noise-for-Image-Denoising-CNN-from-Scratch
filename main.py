@@ -22,11 +22,12 @@ if __name__ == "__main__":
         config = json.load(json_config)
 
     # Get device
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print('Device state: ', device)
 
     # Get network
     net = build_network(config)
+    # net.to(device=device)
 
     # Get dataset
     train_dataset = build_dataset(config, config["train_data"], train=True)

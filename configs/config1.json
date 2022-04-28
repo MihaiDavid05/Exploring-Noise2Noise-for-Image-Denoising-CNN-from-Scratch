@@ -6,7 +6,7 @@
   "dataset": "basic",
   "subset": 2500,
   "batch_size": 4,
-  "epochs": 100,
+  "epochs": 20,
   "learning_rate": 0.001,
   "checkpoint_dir": "checkpoints",
   "augmentations": 0

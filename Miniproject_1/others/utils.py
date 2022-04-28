@@ -13,4 +13,4 @@ def psnr(denoised, ground_truth):
 
     """
     mse = torch.mean((denoised - ground_truth) ** 2)
-    return 20 * torch.log10(255.0 / torch.sqrt(mse))
+    return 20 * torch.log10(1.0 / torch.sqrt(mse))
