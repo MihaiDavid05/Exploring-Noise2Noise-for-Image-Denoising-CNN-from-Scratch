@@ -98,10 +98,6 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             writer.add_image("Target0", targets[0].float().detach().cpu(), global_step)
             writer.add_image("Image0", images[0].float().detach().cpu(), global_step)
 
-            writer.add_image("Prediction1", torch.clamp(preds[1], 0, 1).float().detach().cpu(), global_step)
-            writer.add_image("Target1", targets[1].float().detach().cpu(), global_step)
-            writer.add_image("Image1", images[1].float().detach().cpu(), global_step)
-
         print('Validation PNR score is: {}\n'.format(val_score))
 
         writer.add_scalar("PSNR/val", val_score, global_step)
