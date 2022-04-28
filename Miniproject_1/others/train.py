@@ -58,7 +58,6 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             # Get image and gt masks
             images = batch['image'].to(device=device, dtype=torch.float32)
             targets = batch['target'].to(device=device, dtype=torch.float32)
-            writer.add_image("Target", targets[0], i)
 
             with torch.no_grad():
                 # Forward pass
@@ -98,6 +97,11 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             writer.add_image("Prediction0", torch.clamp(preds[0], 0, 1).float().detach().cpu(), global_step)
             writer.add_image("Target0", targets[0].float().detach().cpu(), global_step)
             writer.add_image("Image0", images[0].float().detach().cpu(), global_step)
+
+            writer.add_image("Prediction1", torch.clamp(preds[1], 0, 1).float().detach().cpu(), global_step)
+            writer.add_image("Target1", targets[1].float().detach().cpu(), global_step)
+            writer.add_image("Image1", images[1].float().detach().cpu(), global_step)
+
         print('Validation PNR score is: {}\n'.format(val_score))
 
         writer.add_scalar("PSNR/val", val_score, global_step)
@@ -111,6 +115,7 @@ def predict(test_image, net, device='cpu'):
     net.eval()
     with torch.no_grad():
         pred = net(test_image)
-    return pred
+    # TODO: keep *255 or not ?!
+    return torch.clamp(pred, 0, 1) * 255
 
 
