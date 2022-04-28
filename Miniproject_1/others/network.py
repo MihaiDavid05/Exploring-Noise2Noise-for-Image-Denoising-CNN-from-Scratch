@@ -126,7 +126,7 @@ class UNetSmallNoSkip(nn.Module):
         )
 
         self._block6 = nn.Sequential(
-            nn.Conv2d(self.in_channels + out_channels, 32, (3, 3), padding=1),
+            nn.Conv2d(self.in_channels, 32, (3, 3), padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(32, out_channels, (3, 3), padding=1),
         )
