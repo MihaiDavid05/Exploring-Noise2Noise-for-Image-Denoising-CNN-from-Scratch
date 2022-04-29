@@ -1,10 +1,11 @@
 import torch
-import json
 import argparse
+import json
+import numpy as np
+import PIL
 from Miniproject_1.others.network import build_network
 from Miniproject_1.others.dataset import build_dataset
-from Miniproject_1.others.train import train
-from torch.utils.tensorboard import SummaryWriter
+from Miniproject_1.others.train import predict
 
 
 def get_args():
@@ -28,12 +29,16 @@ if __name__ == "__main__":
     # Get network
     net = build_network(config)
     net.to(device=device)
-    print(f"The model has: {sum(p.numel() for p in net.parameters() if p.requires_grad)} parameters !")
 
-    # Get dataset
-    train_dataset = build_dataset(config, config["train_data"], train=True)
+    # Get an image
     val_dataset = build_dataset(config, config["val_data"])
+    test_image = torch.unsqueeze(val_dataset.noisy_tensor_train[0], dim=0)
 
     # Train network
-    writer = SummaryWriter(log_dir=config["log_dir"])
-    train(train_dataset, val_dataset, net, config, writer,  device=device)
+    prediction = predict(test_image, net, device=device)
+    tensor = np.array(prediction, dtype=np.uint8)
+    if np.ndim(tensor) > 3:
+        assert tensor.shape[0] == 1
+        tensor = tensor[0]
+    PIL.Image.fromarray(tensor.transpose((1, 2, 0)), mode="RGB").save("./pred.png")
+    print("OK")
