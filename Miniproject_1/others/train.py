@@ -17,7 +17,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
     train_loader = DataLoader(train_images, shuffle=True, batch_size=batch_size)
     val_loader = DataLoader(val_images, shuffle=False, batch_size=1, drop_last=True)
     optimizer = optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), eps=1e-08, amsgrad=False)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=2)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=3)
     criterion = nn.MSELoss()
     global_step = 0
     max_val_score = 0

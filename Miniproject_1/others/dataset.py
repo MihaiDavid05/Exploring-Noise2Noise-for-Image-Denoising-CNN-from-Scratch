@@ -1,8 +1,10 @@
 import torch
+import torch.nn as nn
 from Miniproject_1.others.data_augmentation import Augmenter
+from torch.utils.data import Dataset
 
 
-class BaseDataset:
+class BaseDataset(Dataset):
     def __init__(self, data_dir, subset=None, augmenter=None):
         self.noisy_tensor_train, self.noisy_tensor_target = torch.load(data_dir)
         if subset != -1:
