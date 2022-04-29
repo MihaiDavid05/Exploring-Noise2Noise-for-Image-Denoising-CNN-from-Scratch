@@ -8,6 +8,7 @@
   "batch_size": 4,
   "epochs": 20,
   "learning_rate": 0.001,
+  "use_lr_scheduler": ???????,
   "checkpoint_dir": "checkpoints",
    "augmentations": {
     "horizontal_flip": 0.5,

@@ -11,10 +11,13 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
     epochs = config["epochs"]
     checkpoint_dir = config["checkpoint_dir"]
     lr = config["learning_rate"]
+    use_lr_scheduler = config["use_lr_scheduler"]
+
     # Create PyTorch DataLoaders
     train_loader = DataLoader(train_images, shuffle=True, batch_size=batch_size)
     val_loader = DataLoader(val_images, shuffle=False, batch_size=1, drop_last=True)
     optimizer = optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), eps=1e-08, amsgrad=False)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=2)
     criterion = nn.MSELoss()
     global_step = 0
     max_val_score = 0
@@ -89,6 +92,9 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
 
         print(f'\nEpoch: {epoch} -> val_loss: {val_loss}\n')
         val_score = val_score / num_val_batches
+
+        if use_lr_scheduler == 1:
+            scheduler.step(val_score)
 
         writer.add_scalars('Loss', {'train': epoch_loss, 'val': val_loss}, global_step)
 
