@@ -6,6 +6,9 @@ config 4100: 721395 params; ~ 1:50 minutes/epoch, on GPU Colab:
 
 config 5: 719667 params; ~ ? minutes/epoch, on GPU Colab and 16 on local i7 CPU:
 
+
 config 6: 534531 params; ~ 1:45 minutes/epoch, on GPU Colab:
 25.51 - epoch 20; 0.003477 val loss
+
+config 7: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
 

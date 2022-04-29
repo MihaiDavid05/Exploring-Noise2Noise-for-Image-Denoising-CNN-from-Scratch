@@ -6,7 +6,7 @@
   "dataset": "basic",
   "subset": -1,
   "batch_size": 100,
-  "epochs": 20,
+  "epochs": 40,
   "learning_rate": 0.001,
   "use_lr_scheduler": 0,
   "checkpoint_dir": "checkpoints",
