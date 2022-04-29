@@ -1,7 +1,7 @@
 config 4: 721395 params; ~ 5 minutes/epoch, on GPU Colab and 16 on local i7 CPU;
-25.4074 - epoch 1; 0.00355 val loss
-25.4452 - epoch 10; 0.00351 val loss
-
+25.4074 - epoch 1; 0.003550 val loss
+25.4452 - epoch 10; 0.003517 val loss
+25.4559 - epoch 17; 0.003515 val loss
 
 
 config 5: 885747 params; ~ ? minutes/epoch, on GPU Colab and 17 on local i7 CPU;
