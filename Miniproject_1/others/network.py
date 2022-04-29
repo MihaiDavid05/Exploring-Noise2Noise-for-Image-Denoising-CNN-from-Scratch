@@ -190,13 +190,15 @@ class UNetSmallNoSkip(nn.Module):
         self._block5 = nn.Sequential(
             nn.Conv2d(self.in_channelsx2, self.in_channelsx2, (3, 3), padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(self.in_channelsx2, self.in_channels, (3, 3), padding=1),
+            nn.Conv2d(self.in_channelsx2, self.in_channelsx2, (3, 3), padding=1),
             nn.ReLU(inplace=True),
-            nn.ConvTranspose2d(self.in_channels, self.in_channels, (3, 3), stride=(2, 2), padding=1, output_padding=1)
+            nn.ConvTranspose2d(self.in_channelsx2, self.in_channelsx2, (3, 3), stride=(2, 2), padding=1, output_padding=1)
         )
 
         self._block6 = nn.Sequential(
-            nn.Conv2d(self.in_channels, 32, (3, 3), padding=1),
+            nn.Conv2d(self.in_channelsx2, 64, (3, 3), padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, 32, (3, 3), padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(32, out_channels, (3, 3), padding=1),
         )

@@ -83,7 +83,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             best_val_loss = val_loss
             patience = 0
 
-        if patience == 10:
+        if patience == 5:
             print("Training stopped due to early stopping with patience {}.".format(patience))
             break
 
@@ -111,7 +111,6 @@ def predict(test_image, net, device='cpu'):
     net.eval()
     with torch.no_grad():
         pred = net(test_image)
-    # TODO: keep *255 or not ?!
     return torch.clamp(pred, 0, 1) * 255
 
 
