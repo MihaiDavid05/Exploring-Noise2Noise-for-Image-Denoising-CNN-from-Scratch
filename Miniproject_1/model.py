@@ -16,7 +16,8 @@ class Model:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net = UNetSmall(in_channels=48, out_channels=3, cut_last_convblock=False).to(device=self.device)
         self.augmentations = {"augmentations": {"horizontal_flip": 0.5, "vertical_flip": 0.5}}
-        self.augmenter = Augmenter(self.augmentations)
+        # TODO: Check augmenter. It is very slow
+        self.augmenter = None#Augmenter(self.augmentations)
         self.train_dataset = None
         self.train_loader = None
         self.optimizer = optim.Adam(self.net.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08, amsgrad=False)
@@ -35,8 +36,8 @@ class Model:
 
         # Instantiate dataset and dataloader
         self.train_dataset = TensorDataset(self.augmenter)
-        self.train_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=100)
         self.train_dataset.set_tensors(train_input, train_target)
+        self.train_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=100)
         print("Training started !\n")
         for epoch in range(num_epochs):
             self.net.train()

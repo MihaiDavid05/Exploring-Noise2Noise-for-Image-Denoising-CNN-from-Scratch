@@ -21,7 +21,7 @@ second try:
 
 
 config 9: 311523 params; ~ 1:20 minutes/epoch, on GPU Colab:
-# maine
+# azi
 
 config 10: 721395 params; ~ ? minutes/epoch, on GPU Colab:
-# maine
+# azi

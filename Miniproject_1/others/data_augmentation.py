@@ -2,7 +2,7 @@ import torch
 import random
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
-
+from tqdm import tqdm
 
 class Augmenter:
     """ This class contains methods used to augment the data. """
@@ -21,7 +21,7 @@ class Augmenter:
         Returns: the augmented images and targets
 
         """
-        for i in range(images.size(dim=0)):
+        for i in tqdm(range(images.size(dim=0))):
             image = images[i]
             target = targets[i]
             transformed = False
