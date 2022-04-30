@@ -64,7 +64,7 @@ class Tests(unittest.TestCase):
 
     def test_instantiate_model_class(self):
         title("Testing model class instantiation")
-        for i in [1]:#, 2]:
+        for i in [2]:
             with self.subTest(f"Checking instantiate model class for project {i}"):
                 self._test_instantiate_model_class(i)
 
@@ -74,7 +74,7 @@ class Tests(unittest.TestCase):
 
     def test_forward_dummy_input(self):
         title("Testing forward dummy input")
-        for i in [1]:#, 2]:
+        for i in [2]:
             with self.subTest(f"Checking forward dummy input for project {i}"):
                 self._test_forward_dummy_input(i)
 
@@ -86,7 +86,7 @@ class Tests(unittest.TestCase):
 
     def test_model_pnsr(self):
         title("Testing pretrained model")
-        for i in [1]:#, 2]:
+        for i in [2]:
             with self.subTest(f"Testing pretrained model for project {i}"):
                 self._test_model_pnsr(i)
 
@@ -113,7 +113,7 @@ class Tests(unittest.TestCase):
 
     def test_train_model(self):
         title("Testing model training")
-        for i in [1]:#, 2]:
+        for i in [2]:
             with self.subTest(f"Testing model training for project {i}"):
                 self._test_train_model(i)
 
@@ -148,26 +148,26 @@ class Tests(unittest.TestCase):
         print(f"[PSNR {project_number}: {output_psnr_after:.2f} dB]")
         self.assertGreater(output_psnr_after, output_psnr_before)
 
-    # def test_framework_block(self):
-    #     title("Testing blocks")
-    #     model_module = importlib.import_module(f"Miniproject_2.model")
-    #
-    #     x = torch.randn(1, 3, 32, 32)
-    #
-    #     with self.subTest("Testing convolution"):
-    #         Conv2d = model_module.Conv2d
-    #         conv = Conv2d(3, 3, 3)
-    #         self.assertTrue(torch.allclose(conv(x), F.conv2d(x, conv.weight, conv.bias)))
-    #
-    #     with self.subTest("Testing sigmoid"):
-    #         Sigmoid = model_module.Sigmoid
-    #         sigmoid = Sigmoid()
-    #         self.assertTrue(torch.allclose(sigmoid(x), torch.sigmoid(x)))
-    #
-    #     with self.subTest("Testing sequential"):
-    #         Sequential = model_module.Sequential
-    #         seq = Sequential(conv, sigmoid)
-    #         self.assertTrue(torch.allclose(seq(x), F.conv2d(x, conv.weight, conv.bias).sigmoid()))
+    def test_framework_block(self):
+        title("Testing blocks")
+        model_module = importlib.import_module(f"Miniproject_2.model")
+    
+        x = torch.randn(1, 3, 32, 32)
+    
+        with self.subTest("Testing convolution"):
+            Conv2d = model_module.Conv2d
+            conv = Conv2d(3, 3, 3)
+            self.assertTrue(torch.allclose(conv(x), F.conv2d(x, conv.weight, conv.bias)))
+    
+        with self.subTest("Testing sigmoid"):
+            Sigmoid = model_module.Sigmoid
+            sigmoid = Sigmoid()
+            self.assertTrue(torch.allclose(sigmoid(x), torch.sigmoid(x)))
+    
+        with self.subTest("Testing sequential"):
+            Sequential = model_module.Sequential
+            seq = Sequential(conv, sigmoid)
+            self.assertTrue(torch.allclose(seq(x), F.conv2d(x, conv.weight, conv.bias).sigmoid()))
 
 
 def warn(msg):

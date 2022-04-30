@@ -1,5 +1,8 @@
 import torch
-from .others.utils import Conv2D
+from torch import empty, cat, arange
+from torch.nn.functional import fold, unfold
+torch.set_grad_enabled(False)
+from .others.utils import *
 
 
 class Model:
@@ -21,3 +24,42 @@ class Model:
         #: test_input : tensor of size (N1 , C, H, W) that has to be denoised by the trained or the loaded network.
         #: returns a tensor of the size (N1 , C, H, W)
         pass
+
+class TransposeConv2d:
+    pass
+
+
+class NearestUpsampling:
+    pass
+
+
+class ReLU:
+    pass
+
+
+class Sigmoid:
+    pass
+
+
+class MSE:
+    pass
+
+
+class SGD:
+    pass
+
+
+class Sequential:
+    pass
+
+
+class Conv2D(object):
+
+    def forward(self, *input):
+        raise NotImplementedError
+
+    def backward(self, *gradwrtoutput):
+        raise NotImplementedError
+
+    def param(self):
+        return []
