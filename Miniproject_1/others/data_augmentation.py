@@ -4,6 +4,7 @@ import torchvision.transforms as T
 import torchvision.transforms.functional as TF
 from tqdm import tqdm
 
+
 class Augmenter:
     """ This class contains methods used to augment the data. """
     def __init__(self, cfg):

@@ -31,8 +31,10 @@ if __name__ == "__main__":
     net.to(device=device)
 
     # Get an image
+    IMAGE_INDEX = 0
     val_dataset = build_dataset(config, config["val_data"])
-    test_image = torch.unsqueeze(val_dataset.noisy_tensor_train[0], dim=0)
+    test_image = torch.unsqueeze(val_dataset.noisy_tensor_train[IMAGE_INDEX], dim=0)
+    test_target = val_dataset.noisy_tensor_target[IMAGE_INDEX]
 
     # Train network
     prediction = predict(test_image, net, device=device)
@@ -41,4 +43,5 @@ if __name__ == "__main__":
         assert tensor.shape[0] == 1
         tensor = tensor[0]
     PIL.Image.fromarray(tensor.transpose((1, 2, 0)), mode="RGB").save("./pred.png")
+    PIL.Image.fromarray(tensor.transpose((1, 2, 0)), mode="RGB").save("./pred_target.png")
     print("OK")

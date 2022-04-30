@@ -135,7 +135,7 @@ class Tests(unittest.TestCase):
         output_psnr_before = self.compute_psnr(val_input, val_target)
 
         # TODO: Check number of epochs given here
-        model.train(train_input0, train_input1, 20)
+        model.train(train_input0, train_input1, 1)
 
         mini_batch_size = 100
         model_outputs = []
