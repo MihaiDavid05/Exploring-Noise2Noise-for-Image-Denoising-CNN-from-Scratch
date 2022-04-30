@@ -75,7 +75,7 @@ class Tests(unittest.TestCase):
 
     def test_forward_dummy_input(self):
         title("Testing forward dummy input")
-        for i in [1,2]:
+        for i in [1, 2]:
             with self.subTest(f"Checking forward dummy input for project {i}"):
                 self._test_forward_dummy_input(i)
 
