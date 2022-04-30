@@ -11,17 +11,13 @@ config 6: 534531 params; ~ 1:45 minutes/epoch, on GPU Colab:
 25.51 - epoch 20; 0.003477 val loss
 
 config 7: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
-20.72 - epoch 6; stopped due to early stopping at epoch 11 !!!!!!!
-second try:
 
 
 config 8: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
-18.17 - epoch 1; stopped due to early stopping at epoch 11 !!!!!!!
-second try:
-
+25.63 - epoch 20; val_loss: 0.003403 - ONE MORE TIME
 
 config 9: 311523 params; ~ 1:20 minutes/epoch, on GPU Colab:
 25.51 - epoch 19; 0.003478 val loss
 
 config 10: 721395 params; ~ ? minutes/epoch, on GPU Colab:
-25.56 epoch 21
+EU

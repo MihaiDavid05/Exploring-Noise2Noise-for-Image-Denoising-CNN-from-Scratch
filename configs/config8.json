@@ -13,6 +13,8 @@
    "augmentations": {
     "horizontal_flip": 1,
     "vertical_flip": 1,
-     "vertical_horizontal_flip": 1
+     "vertical_horizontal_flip": 1,
+     "swap_input_target": 0,
+     "interchange_pixels": 0
   }
 }

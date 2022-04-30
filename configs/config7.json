@@ -11,10 +11,10 @@
   "use_lr_scheduler": 0,
   "checkpoint_dir": "checkpoints",
    "augmentations": {
-    "horizontal_flip": 0.5,
-    "vertical_flip": 0.5,
-    "rotation": [45, 315],
-     "swap_input_target": 0.5,
-     "interchange_pixels": 0.5
+    "horizontal_flip": 1,
+    "vertical_flip": 1,
+     "vertical_horizontal_flip": 1,
+     "swap_input_target": 1,
+     "interchange_pixels": 0
   }
 }
