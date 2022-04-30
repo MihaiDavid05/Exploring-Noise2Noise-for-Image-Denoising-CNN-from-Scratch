@@ -89,7 +89,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             best_val_loss = val_loss
             patience = 0
 
-        if patience == epochs/4:
+        if patience == epochs/2:
             print("Training stopped due to early stopping with patience {}.".format(patience))
             break
 

@@ -11,7 +11,8 @@
   "use_lr_scheduler": 0,
   "checkpoint_dir": "checkpoints",
    "augmentations": {
-    "horizontal_flip": 0.5,
-    "vertical_flip": 0.5
+    "horizontal_flip": 1,
+    "vertical_flip": 1,
+     "vertical_horizontal_flip": 1
   }
 }
