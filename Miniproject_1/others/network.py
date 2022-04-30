@@ -285,6 +285,7 @@ class UNetSmallNoSkip(nn.Module):
 def build_network(config):
     """
     Build netowrk according to type specified in config.
+    NOTE: This was used only in our experiments.
     Args:
         config: Config dictionary
 

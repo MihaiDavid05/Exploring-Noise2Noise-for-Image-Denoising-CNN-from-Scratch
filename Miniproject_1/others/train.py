@@ -6,6 +6,9 @@ from tqdm import tqdm
 from Miniproject_1.others.utils import psnr
 
 
+# NOTE: THIS SCRIPT WAS ONLY USED IN OUR EXPERIMENTS, TOGETHER WITH A main.py FILE NOT PROVIDED!
+
+
 def train(train_images, val_images, net, config, writer, device='cpu'):
     batch_size = config["batch_size"]
     epochs = config["epochs"]
@@ -17,7 +20,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
     train_loader = DataLoader(train_images, shuffle=True, batch_size=batch_size)
     val_loader = DataLoader(val_images, shuffle=False, batch_size=1, drop_last=True)
     optimizer = optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999), eps=1e-08, amsgrad=False)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=3)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=epochs/4, factor=0.5, verbose=True)
     criterion = nn.MSELoss()
     global_step = 0
     max_val_score = 0
@@ -86,7 +89,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
             best_val_loss = val_loss
             patience = 0
 
-        if patience == 10:
+        if patience == epochs/4:
             print("Training stopped due to early stopping with patience {}.".format(patience))
             break
 
@@ -94,7 +97,7 @@ def train(train_images, val_images, net, config, writer, device='cpu'):
         val_score = val_score / num_val_batches
 
         if use_lr_scheduler == 1:
-            scheduler.step(val_score)
+            scheduler.step(val_loss)
 
         writer.add_scalars('Loss', {'train': epoch_loss, 'val': val_loss}, global_step)
 

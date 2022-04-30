@@ -13,8 +13,11 @@ pip install pytorch==1.9.0 torchvision torchaudio cpuonly -c pytorch
 Other installations:
 ```bash
 pip install tensorboard
+pip install tqdm
+pip install pillow
 ```
 
+### 3. Tensorboard
 You may encouter an error with tensorboard. Install this:
 ```bash
 pip install setuptools==59.5.0

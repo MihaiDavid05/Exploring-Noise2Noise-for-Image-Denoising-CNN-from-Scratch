@@ -1,17 +1,19 @@
 import torch
-import torch.nn as nn
 from Miniproject_1.others.data_augmentation import Augmenter
 from torch.utils.data import Dataset
 
 
 class TensorDataset(Dataset):
+    """
+    Dataset class used for provided framework.
+    """
     def __init__(self, augmenter=None):
         self._noisy_tensor_train, self._noisy_tensor_target = None, None
         self.augmenter = augmenter
         if self.augmenter is not None and self._noisy_tensor_train is not None and self._noisy_tensor_target:
             print("Augmenting data...\n")
             self._noisy_tensor_train, self._noisy_tensor_target = self.augmenter.augment_data(self._noisy_tensor_train,
-                                                                                              self._noisy_tensor_train)
+                                                                                              self._noisy_tensor_target)
             print("Augmenting data FINISHED!\n")
             print(f"Dataset of size {self.__len__()}")
 
@@ -30,6 +32,9 @@ class TensorDataset(Dataset):
 
 
 class BaseDataset(Dataset):
+    """
+    NOTE: Dataset class used only in our experiments!
+    """
     def __init__(self, data_dir, subset=None, augmenter=None):
         self.noisy_tensor_train, self.noisy_tensor_target = torch.load(data_dir)
         if subset != -1:
@@ -39,7 +44,7 @@ class BaseDataset(Dataset):
         if self.augmenter is not None:
             print("Augmenting data...\n")
             self.noisy_tensor_train, self.noisy_tensor_target = self.augmenter.augment_data(self.noisy_tensor_train.float(),
-                                                                                            self.noisy_tensor_train.float())
+                                                                                            self.noisy_tensor_target.float())
             print("Augmenting data FINISHED!\n")
             print(f"Dataset of size {self.__len__()}")
 
@@ -56,6 +61,7 @@ class BaseDataset(Dataset):
 def build_dataset(config, data_dir, train=False):
     """
     Build dataset according to configuration file.
+    NOTE: This was used only in our experiments!
     Args:
         config: Config dictionary
         data_dir: Path to data

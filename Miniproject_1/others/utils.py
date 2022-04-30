@@ -1,7 +1,6 @@
 import torch
 
 
-# From Wikipedia: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
 def psnr(denoised, ground_truth):
     """
     Computes peak signal-to-noise ratio

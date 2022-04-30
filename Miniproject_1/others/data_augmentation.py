@@ -1,6 +1,7 @@
 import torch
-import torch.nn as nn
+import random
 import torchvision.transforms as T
+import torchvision.transforms.functional as TF
 
 
 class Augmenter:
@@ -8,42 +9,6 @@ class Augmenter:
     def __init__(self, cfg):
         self.cfg = cfg
         self.augmentations = cfg["augmentations"]
-
-    def __create_transformer(self, mean, std):
-        """
-        Creates a tranformer based on the configuration.
-        Args:
-            self: the augmenter object
-
-        Returns: a transformer that can be applied on the inputs and output to augment data
-
-        """
-        transformers = []
-        if "rotation" in self.augmentations:
-            transformers.append(T.RandomRotation(degrees=self.augmentations["rotation"]))
-        if "horizontal_flip" in self.augmentations:
-            transformers.append(T.RandomHorizontalFlip(p=self.augmentations["horizontal_flip"]))
-        if "vertical_flip" in self.augmentations:
-            transformers.append(T.RandomVerticalFlip(p=self.augmentations["vertical_flip"]))
-        if "brightness" in self.augmentations:
-            transformers.append(T.ColorJitter(brightness=tuple(*self.augmentations["brightness"])))
-        if "contrast" in self.augmentations:
-            transformers.append(T.ColorJitter(contrast=tuple(*self.augmentations["contrast"])))
-        if "hue" in self.augmentations:
-            transformers.append(T.ColorJitter(hue=tuple(*self.augmentations["hue"])))
-        if "saturation" in self.augmentations:
-            transformers.append(T.ColorJitter(saturation=tuple(*self.augmentations["saturation"])))
-        if "erasing" in self.augmentations:
-            transformers.append(T.RandomErasing(p=self.augmentations["erasing"]))
-        if "perspective" in self.augmentations:
-            transformers.append(T.RandomPerspective(p=self.augmentations["perspective"]))
-        if "translate" in self.augmentations:
-            transformers.append(T.RandomAffine(degrees=0, translate=self.augmentations["translate"]))
-        if "scale" in self.augmentations:
-            transformers.append(T.RandomAffine(degrees=0, scale=self.augmentations["scale"]))
-        if "normalize" in self.augmentations:
-            transformers.append(T.Normalize(mean=mean, std=std))
-        return nn.Sequential(*transformers)
 
     def augment_data(self, images, targets):
         """
@@ -56,7 +21,56 @@ class Augmenter:
         Returns: the augmented images and targets
 
         """
-        img_mean = torch.mean(images)
-        img_std = torch.std(images)
-        transformer = self.__create_transformer(img_mean, img_std)
-        return torch.vstack([images, transformer(images)]), torch.vstack([targets, transformer(targets)])
+        for i in range(images.size(dim=0)):
+            image = images[i]
+            target = targets[i]
+            transformed = False
+            if "horizontal_flip" in self.augmentations:
+                # Random horizontal flipping
+                if random.random() > self.augmentations["horizontal_flip"]:
+                    image = TF.hflip(image)
+                    target = TF.hflip(target)
+                    transformed = True
+            if "vertical_flip" in self.augmentations:
+                # Random vertical flipping
+                if random.random() > self.augmentations["vertical_flip"]:
+                    image = TF.vflip(image)
+                    target = TF.vflip(target)
+                    transformed = True
+            if "rotation" in self.augmentations:
+                # Random rotation
+                if random.random() > 0.5:
+                    rotation = T.RandomRotation(degrees=self.augmentations["rotation"])
+                    # Random angle
+                    angle = rotation.get_params(rotation.degrees)
+                    image = TF.rotate(image, angle)
+                    target = TF.rotate(target, angle)
+                    transformed = True
+            if transformed:
+                if len(image.size()) < 4:
+                    image = torch.unsqueeze(image, dim=0)
+                    target = torch.unsqueeze(target, dim=0)
+                images = torch.vstack([images, image])
+                targets = torch.vstack([targets, target])
+
+            if "swap_input_target" in self.augmentations:
+                if random.random() > self.augmentations["swap_input_target"]:
+                    images = torch.vstack([images, targets[i].unsqueeze(dim=0)])
+                    targets = torch.vstack([targets, images[i].unsqueeze(dim=0)])
+            if "interchange_pixels" in self.augmentations:
+                # TODO: Use this if we know the noise is not correlated. Or maybe just try!
+                if random.random() > 0.5:
+                    image = torch.flatten(images[i], 1, 2)
+                    img_size = image.shape[1]
+                    image_copy = torch.clone(image)
+                    target = torch.flatten(targets[i], 1, 2)
+
+                    indexes = torch.randint(img_size, size=(img_size // 4, ))
+                    image[:, indexes] = target[:, indexes]
+                    target[:, indexes] = image_copy[:, indexes]
+                    image = torch.reshape(image, images[i].size())
+                    target = torch.reshape(target, targets[i].size())
+                    images = torch.vstack([images, image.unsqueeze(dim=0)])
+                    targets = torch.vstack([targets, target.unsqueeze(dim=0)])
+
+        return images, targets

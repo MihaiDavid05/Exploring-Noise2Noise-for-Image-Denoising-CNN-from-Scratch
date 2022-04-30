@@ -13,8 +13,8 @@
    "augmentations": {
     "horizontal_flip": 0.5,
     "vertical_flip": 0.5,
-    "translate": [0.1, 0.1],
-    "scale": [0.9, 1.1],
-    "rotation": [45, 315]
+    "rotation": [45, 315],
+     "swap_input_target": 0.5,
+     "interchange_pixels": 0.5
   }
 }

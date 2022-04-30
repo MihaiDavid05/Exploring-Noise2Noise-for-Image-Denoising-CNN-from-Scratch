@@ -12,26 +12,28 @@ from .others.data_augmentation import Augmenter
 class Model:
     def __init__(self) -> None:
         # instantiate model + optimizer + loss function + any other stuff you need
+
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net = UNetSmall(in_channels=48, out_channels=3, cut_last_convblock=False).to(device=self.device)
         self.augmentations = {"augmentations": {"horizontal_flip": 0.5, "vertical_flip": 0.5}}
-        # TODO: Check why augmenter not working, ask about Dataloader
-        self.augmenter = None #Augmenter(self.augmentations)
+        self.augmenter = Augmenter(self.augmentations)
         self.train_dataset = None
         self.train_loader = None
         self.optimizer = optim.Adam(self.net.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08, amsgrad=False)
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'max', patience=2)
         self.criterion = nn.MSELoss()
         self.bestmodel_path = Path(__file__).parent / "bestmodel.pth"
 
     def load_pretrained_model(self) -> None:
         # This loads the parameters saved in bestmodel.pth into the model (pickle format)
+
         self.net.load_state_dict(torch.load(self.bestmodel_path, map_location=self.device))
 
     def train(self, train_input, train_target, num_epochs) -> None:
         #: train_input : tensor of size (N, C, H, W) containing a noisy version of the images.
         #: train_target : tensor of size (N, C, H, W) containing another noisy version of the same images ,
         # which only differs from the input by their noise .
+
+        # Instantiate dataset and dataloader
         self.train_dataset = TensorDataset(self.augmenter)
         self.train_loader = DataLoader(self.train_dataset, shuffle=True, batch_size=100)
         self.train_dataset.set_tensors(train_input, train_target)
