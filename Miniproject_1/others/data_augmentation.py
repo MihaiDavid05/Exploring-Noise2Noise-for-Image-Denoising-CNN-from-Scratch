@@ -34,15 +34,14 @@ class Augmenter:
             indices = permutation[i:i + batch_size]
             batch_images = images[indices]
             batch_targets = targets[indices]
+            if i == 0 and self.augmentations["swap_input_target"] == 1:
+                images = torch.vstack([images, batch_targets])
+                targets = torch.vstack([targets, batch_images])
             if i // batch_size != 0:
                 new_images = transformations[i // batch_size](batch_images)
                 new_targets = transformations[i // batch_size](batch_targets)
                 images = torch.vstack([images, new_images])
                 targets = torch.vstack([targets, new_targets])
-
-        if self.augmentations["swap_input_target"] == 1:
-            images = torch.vstack([images, targets])
-            targets = torch.vstack([targets, images])
 
         if self.augmentations["interchange_pixels"] == 1:
             for i in tqdm(range(images.size()[0] // 2)):
