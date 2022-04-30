@@ -25,6 +25,7 @@ class Model:
         #: returns a tensor of the size (N1 , C, H, W)
         pass
 
+
 class TransposeConv2d:
     pass
 
