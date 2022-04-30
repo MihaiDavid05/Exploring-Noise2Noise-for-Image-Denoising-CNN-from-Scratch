@@ -4,6 +4,31 @@ from Miniproject_1.others.data_augmentation import Augmenter
 from torch.utils.data import Dataset
 
 
+class TensorDataset(Dataset):
+    def __init__(self, augmenter=None):
+        self._noisy_tensor_train, self._noisy_tensor_target = None, None
+        self.augmenter = augmenter
+        if self.augmenter is not None and self._noisy_tensor_train is not None and self._noisy_tensor_target:
+            print("Augmenting data...\n")
+            self._noisy_tensor_train, self._noisy_tensor_target = self.augmenter.augment_data(self._noisy_tensor_train,
+                                                                                              self._noisy_tensor_train)
+            print("Augmenting data FINISHED!\n")
+            print(f"Dataset of size {self.__len__()}")
+
+    def set_tensors(self, train, target):
+        self._noisy_tensor_train = train
+        self._noisy_tensor_target = target
+
+    def __len__(self):
+        return self._noisy_tensor_train.size(dim=0)
+
+    def __getitem__(self, idx):
+        return {
+            'image': (self._noisy_tensor_train[idx]).float(),
+            'target':  (self._noisy_tensor_target[idx]).float(),
+        }
+
+
 class BaseDataset(Dataset):
     def __init__(self, data_dir, subset=None, augmenter=None):
         self.noisy_tensor_train, self.noisy_tensor_target = torch.load(data_dir)

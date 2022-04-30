@@ -14,9 +14,12 @@ config 7: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
 20.72 - epoch 6; stopped due to early stopping at epoch 11 !!!!!!! BAD BOY !!!!
 
 config 8: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
-# ruleaza
+# 18.17 - epoch 1; stopped due to early stopping at epoch 11 !!!!!!! BAD BOY !!!!
+# TODO: check the transformations randomness in both train and val
+# TODO: check swapping pixels technique
 
-config 9: 721395 params; ~ ? minutes/epoch, on GPU Colab:
+config 9: 311523 params; ~ 1:20 minutes/epoch, on GPU Colab:
+# maine
 
-
-# Try:  config 4100 with lr_scheduler and more epochs
+config 10: 721395 params; ~ ? minutes/epoch, on GPU Colab:
+# maine
