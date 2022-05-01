@@ -147,9 +147,10 @@ class UNetSmall(nn.Module):
         return self._block6(concat1)
 
 
-class UNetSmall(nn.Module):
+class UNetVerySmall(nn.Module):
+    # TODO: Implment this
     def __init__(self, in_channels, out_channels, cut_last_convblock):
-        super(UNetSmall, self).__init__()
+        super(UNetVerySmall, self).__init__()
         self.out_channels = out_channels
         self.in_channels = in_channels
         self.in_channelsx2 = in_channels * 2
@@ -365,6 +366,8 @@ def build_network(config):
     """
     if config["model"] == 'unet_small':
         net = UNetSmall(in_channels=48, out_channels=3, cut_last_convblock=False)
+    elif config["model"] == 'unet_very_small':
+        net = UNetVerySmall(in_channels=48, out_channels=3, cut_last_convblock=False)
     elif config["model"] == 'unet_small_noskip':
         net = UNetSmallNoSkip(in_channels=48, out_channels=3, cut_last_convblock=False)
     elif config["model"] == 'unet_small_upsample':

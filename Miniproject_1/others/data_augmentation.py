@@ -45,12 +45,10 @@ class Augmenter:
 
         if self.augmentations["interchange_pixels"] == 1:
             for i in tqdm(range(images.size()[0] // 2)):
-                # TODO: Use this if we know the noise is not correlated. Or maybe just try!
                 image = torch.flatten(images[i], 1, 2)
                 img_size = image.shape[1]
                 image_copy = torch.clone(image)
                 target = torch.flatten(targets[i], 1, 2)
-
                 indexes = torch.randint(img_size, size=(img_size // 4, ))
                 image[:, indexes] = target[:, indexes]
                 target[:, indexes] = image_copy[:, indexes]
