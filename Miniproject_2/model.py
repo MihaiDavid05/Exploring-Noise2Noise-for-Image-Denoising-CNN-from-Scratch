@@ -13,8 +13,8 @@ class Model:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.net = Sequential(Conv2D(3, 16, 3, stride=2), ReLU(),
                               Conv2D(16, 16, 3, stride=2), ReLU(),
-                              NearestUpsampling(), ReLU(),
-                              NearestUpsampling(), Sigmoid())
+                              NearestUpsampling(16, 16, 3), ReLU(),
+                              NearestUpsampling(16, 3, 3), Sigmoid())
         self.optimizer = SGD()
         self.criterion = MSE()
         self.bestmodel_path = Path(__file__).parent / "bestmodel.pth"
@@ -115,8 +115,13 @@ class TransposeConv2d(Module):
 
 
 class NearestUpsampling(Module):
-    def __init__(self):
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1):
         super(NearestUpsampling, self).__init__()
+
+        self._in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
 
     def forward(self, *input):
         raise NotImplementedError
