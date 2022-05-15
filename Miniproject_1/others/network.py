@@ -151,7 +151,6 @@ class UNetSmall(nn.Module):
 
 
 class UNetVerySmall(nn.Module):
-    # TODO: Implment this
     def __init__(self, in_channels, out_channels, cut_last_convblock):
         super(UNetVerySmall, self).__init__()
         self.out_channels = out_channels
@@ -171,19 +170,12 @@ class UNetVerySmall(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(2)
         )
-        self._block2_1 = nn.Sequential(
-            nn.Conv2d(self.in_channels, self.in_channels, (3, 3), padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
-        )
-
         self._block3 = nn.Sequential(
             nn.Conv2d(self.in_channels, self.in_channels, (3, 3), padding=1),
             nn.ReLU(inplace=True),
             nn.ConvTranspose2d(self.in_channels, self.in_channels, (3, 3), stride=(2, 2), padding=(1, 1),
                                output_padding=(1, 1))
         )
-
         self._block4 = nn.Sequential(
             nn.Conv2d(self.in_channelsx2, self.in_channelsx2, (3, 3), padding=1),
             nn.ReLU(inplace=True),
@@ -192,17 +184,7 @@ class UNetVerySmall(nn.Module):
             nn.ConvTranspose2d(self.in_channelsx2, self.in_channelsx2, (3, 3), stride=(2, 2), padding=(1, 1),
                                output_padding=(1, 1))
         )
-
         self._block5 = nn.Sequential(
-            nn.Conv2d(self.in_channels * 3, self.in_channelsx2, (3, 3), padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(self.in_channelsx2, self.in_channelsx2, (3, 3), padding=1),
-            nn.ReLU(inplace=True),
-            nn.ConvTranspose2d(self.in_channelsx2, self.in_channelsx2, (3, 3), stride=(2, 2), padding=(1, 1),
-                               output_padding=(1, 1))
-        )
-
-        self._block6 = nn.Sequential(
             nn.Conv2d(self.in_channelsx2 + out_channels, 64, (3, 3), padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 32, (3, 3), padding=1),
@@ -213,16 +195,13 @@ class UNetVerySmall(nn.Module):
     def forward(self, x):
         pool1 = self._block1(x)
         pool2 = self._block2(pool1)
-        pool3 = self._block2_1(pool2)
 
-        upsample3 = self._block3(pool3)
-        concat3 = torch.cat((upsample3, pool2), dim=1)
-        upsample2 = self._block4(concat3)
+        upsample2 = self._block3(pool2)
         concat2 = torch.cat((upsample2, pool1), dim=1)
-        upsample1 = self._block5(concat2)
+        upsample1 = self._block4(concat2)
         concat1 = torch.cat((upsample1, x), dim=1)
 
-        return self._block6(concat1)
+        return self._block5(concat1)
 
 
 class UNetSmall32(nn.Module):

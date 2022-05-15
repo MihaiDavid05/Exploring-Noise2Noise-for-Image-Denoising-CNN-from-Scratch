@@ -59,7 +59,8 @@ class Model:
             epoch_loss = epoch_loss / len(self.train_loader)
             print(f'\nEpoch: {epoch + 1} -> train_loss: {epoch_loss} \n')
         # Save model
-        torch.save(self.net.state_dict(), self.bestmodel_path)
+        # TODO: check this
+        # torch.save(self.net.state_dict(), self.bestmodel_path)
         print("Training ended!\n")
 
     def predict(self, test_input) -> torch.Tensor:
@@ -67,14 +68,12 @@ class Model:
         #: returns a tensor of the size (N1 , C, H, W)
 
         # Send tensor to device
-        test_input = test_input / 255.0
         test_input = test_input.to(device=self.device, dtype=torch.float32)
-        # # TODO: check this
-        # test_input = test_input / 255.0
+        test_input = test_input / 255.0
         self.net.eval()
         with torch.no_grad():
             # Make prediction
             prediction = self.net(test_input)
+            # Clamp prediction and return tensor in range [0, 255]
             prediction = torch.clamp(prediction, 0, 1) * 255
-            # prediction = prediction * 255.0
         return prediction

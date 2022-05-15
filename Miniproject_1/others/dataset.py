@@ -30,8 +30,8 @@ class TensorDataset(Dataset):
 
     def __getitem__(self, idx):
         return {
-            'image': (self._noisy_tensor_train[idx]).float(),
-            'target':  (self._noisy_tensor_target[idx]).float(),
+            'image': (self._noisy_tensor_train[idx] / 255.0).float(),
+            'target':  (self._noisy_tensor_target[idx] / 255.0).float(),
         }
 
 
@@ -65,7 +65,7 @@ class BaseDataset(Dataset):
 def build_dataset(config, data_dir, train=False):
     """
     Build dataset according to configuration file.
-    NOTE: This was used only in our experiments!
+    NOTE: This function was used only in our experiments!
     Args:
         config: Config dictionary
         data_dir: Path to data
