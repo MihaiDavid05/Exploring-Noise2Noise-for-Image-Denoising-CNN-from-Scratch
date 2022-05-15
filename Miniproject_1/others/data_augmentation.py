@@ -1,6 +1,5 @@
 import torch
 import torchvision.transforms as T
-from tqdm import tqdm
 
 
 class Augmenter:
@@ -44,7 +43,7 @@ class Augmenter:
                 targets = torch.vstack([targets, new_targets])
 
         if self.augmentations["interchange_pixels"] == 1:
-            for i in tqdm(range(images.size()[0] // 2)):
+            for i in range(images.size()[0] // 2):
                 image = torch.flatten(images[i], 1, 2)
                 img_size = image.shape[1]
                 image_copy = torch.clone(image)
