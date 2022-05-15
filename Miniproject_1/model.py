@@ -67,9 +67,14 @@ class Model:
         #: returns a tensor of the size (N1 , C, H, W)
 
         # Send tensor to device
+        test_input = test_input / 255.0
         test_input = test_input.to(device=self.device, dtype=torch.float32)
+        # # TODO: check this
+        # test_input = test_input / 255.0
         self.net.eval()
         with torch.no_grad():
             # Make prediction
             prediction = self.net(test_input)
+            prediction = torch.clamp(prediction, 0, 1) * 255
+            # prediction = prediction * 255.0
         return prediction
