@@ -58,7 +58,8 @@ class Model:
             epoch_loss = epoch_loss / len(self.train_loader)
             print(f'\nEpoch: {epoch + 1} -> train_loss: {epoch_loss} \n')
         # Save model
-        torch.save(self.net.state_dict(), self.bestmodel_path)
+        # TODO: check this
+        # torch.save(self.net.state_dict(), self.bestmodel_path)
         print("Training ended!\n")
 
     def predict(self, test_input) -> torch.Tensor:
@@ -67,6 +68,7 @@ class Model:
 
         # Send tensor to device
         test_input = test_input.to(device=self.device, dtype=torch.float32)
+        # Normalize image
         test_input = test_input / 255.0
         self.net.eval()
         with torch.no_grad():
