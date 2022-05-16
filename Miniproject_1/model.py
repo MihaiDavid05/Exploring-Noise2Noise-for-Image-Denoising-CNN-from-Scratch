@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
-from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torch import optim
 from pathlib import Path
-from .others.network import UNetVerySmall
+from .others.network import UNetSmall
 from .others.dataset import TensorDataset
 from .others.data_augmentation import Augmenter
 
@@ -14,7 +13,7 @@ class Model:
         # instantiate model + optimizer + loss function + any other stuff you need
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.net = UNetVerySmall(in_channels=48, out_channels=3, cut_last_convblock=False).to(device=self.device)
+        self.net = UNetSmall(in_channels=48, out_channels=3, cut_last_convblock=False).to(device=self.device)
         self.augmentations = {"augmentations": {"horizontal_flip": 1, "vertical_flip": 1, "vertical_horizontal_flip": 1,
                                                 "swap_input_target": 1, "interchange_pixels": 0}}
         self.augmenter = Augmenter(self.augmentations)
@@ -42,7 +41,7 @@ class Model:
         for epoch in range(num_epochs):
             self.net.train()
             epoch_loss = 0
-            for batch in tqdm(self.train_loader):
+            for batch in self.train_loader:
                 # Get image and target
                 images = batch['image'].to(device=self.device, dtype=torch.float32)
                 targets = batch['target'].to(device=self.device, dtype=torch.float32)
@@ -59,8 +58,7 @@ class Model:
             epoch_loss = epoch_loss / len(self.train_loader)
             print(f'\nEpoch: {epoch + 1} -> train_loss: {epoch_loss} \n')
         # Save model
-        # TODO: check this
-        # torch.save(self.net.state_dict(), self.bestmodel_path)
+        torch.save(self.net.state_dict(), self.bestmodel_path)
         print("Training ended!\n")
 
     def predict(self, test_input) -> torch.Tensor:
