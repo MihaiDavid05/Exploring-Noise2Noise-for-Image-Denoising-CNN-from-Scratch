@@ -116,7 +116,7 @@ def predict(test_image, net, device='cpu'):
     test_image = test_image / 255.0
     test_image = test_image.to(device=device, dtype=torch.float32)
     # Load model
-    net.load_state_dict(torch.load('checkpoints/bestmodel.pth'))
+    net.load_state_dict(torch.load('checkpoints/bestmodel.pth', map_location=device))
     net.eval()
     with torch.no_grad():
         pred = net(test_image)

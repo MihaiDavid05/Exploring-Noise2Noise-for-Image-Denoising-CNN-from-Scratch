@@ -31,17 +31,19 @@ if __name__ == "__main__":
     net.to(device=device)
 
     # Get an image
-    IMAGE_INDEX = 0
     val_dataset = build_dataset(config, config["val_data"])
-    test_image = torch.unsqueeze(val_dataset.noisy_tensor_train[IMAGE_INDEX], dim=0)
-    test_target = torch.unsqueeze(val_dataset.noisy_tensor_target[IMAGE_INDEX], dim=0)
+    for IMAGE_INDEX in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+        test_image = torch.unsqueeze(val_dataset.noisy_tensor_train[IMAGE_INDEX], dim=0)
+        test_target = val_dataset.noisy_tensor_target[IMAGE_INDEX]
 
-    # Train network
-    prediction = predict(test_image, net, device=device)
-    tensor = np.array(prediction, dtype=np.uint8)
-    if np.ndim(tensor) > 3:
-        assert tensor.shape[0] == 1
-        tensor = tensor[0]
-    PIL.Image.fromarray(tensor.transpose((1, 2, 0)), mode="RGB").save("./pred.png")
-    PIL.Image.fromarray(np.array(test_target, dtype=np.uint8).transpose((1, 2, 0)), mode="RGB").save("./pred_target.png")
-    print("OK")
+        # Train network
+        prediction = predict(test_image, net, device=device)
+        tensor = np.array(prediction, dtype=np.uint8)
+        if np.ndim(tensor) > 3:
+            assert tensor.shape[0] == 1
+            tensor = tensor[0]
+        PIL.Image.fromarray(tensor.transpose((1, 2, 0)), mode="RGB").save(f"./predictions/pred{str(IMAGE_INDEX)}.png")
+        PIL.Image.fromarray(np.array(test_target, dtype=np.uint8).transpose((1, 2, 0)), mode="RGB").save(f"./predictions/pred_target{str(IMAGE_INDEX)}.png")
+        PIL.Image.fromarray(np.array(torch.squeeze(test_image, dim=0), dtype=np.uint8).transpose((1, 2, 0)), mode="RGB").save(f"./predictions/pred_image{str(IMAGE_INDEX)}.png")
+
+        print("Prediction OK")

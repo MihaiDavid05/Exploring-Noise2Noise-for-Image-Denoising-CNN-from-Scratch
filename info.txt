@@ -11,8 +11,7 @@ config 6: 534531 params; ~ 1:45 minutes/epoch, on GPU Colab:
 25.51 - epoch 20; 0.003477 val loss
 
 config 7: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab
-25.65 epoch 18
-25.62 - epoch 12 - 10 minutes Tesla T4 15 GB
+25.65 epoch 19
 
 config 8: 721395 params; ~ 3:35 minutes/epoch, on GPU Colab:
 25.64 - epoch 22; val_loss: 0.003403
@@ -24,5 +23,5 @@ config 10: 721395 params; ~ ? minutes/epoch, on GPU Colab:
 25.57 epoch 19
 
 config 11: 410019 params;
-25.66 - epoch 19; val los_0.00338
-25.62 - epoch 13 - 10 minutes Tesla T4 15 GB
+25.66 - epoch 19; val los 0.00338
+25.65 - epoch 12 - 10 minutes Tesla T4 15 GB
