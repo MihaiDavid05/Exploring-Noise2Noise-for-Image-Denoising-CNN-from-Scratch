@@ -1091,7 +1091,7 @@ class Model:
         #: test ̇input: tensor of size (N1, C, H, W) with values in range 0-255 that has to be denoised by the trained or the loaded network.
         #: returns a tensor of the size (N1, C, H, W) with values in range 0-255.
         test_input = test_input / 255.0
-        test_prediction = self.model(test_input).clamp(0.0, 1.0) * 255.0
+        test_prediction = self.model(test_input).clamp(0, 1) * 255
         return test_prediction
 
     def save_model(self) -> None:
