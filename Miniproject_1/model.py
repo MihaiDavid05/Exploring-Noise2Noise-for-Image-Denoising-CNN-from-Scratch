@@ -7,6 +7,8 @@ from .others.network import UNetSmall
 from .others.dataset import TensorDataset
 from .others.data_augmentation import Augmenter
 
+torch.set_grad_enabled(True)
+
 
 class Model:
     def __init__(self) -> None:
