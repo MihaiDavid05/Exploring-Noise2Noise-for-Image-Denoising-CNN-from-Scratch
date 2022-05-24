@@ -9,6 +9,8 @@ import random
 import pickle
 
 torch.set_grad_enabled(False)
+# torch.manual_seed(0)
+# random.seed(0)
 
 
 class Module(object):
@@ -1076,7 +1078,7 @@ class Model:
                 # Accumulate loss
                 epoch_loss += batch_loss
             epoch_loss = epoch_loss / num_batches
-            print(f'Epoch {epoch + 1} -> train loss: {epoch_loss}\n')
+            print(f'Epoch {epoch + 1} -> train loss: {epoch_loss}')
         print("Training ended!")
 
     def predict(self, test_input: torch.Tensor) -> torch.Tensor:
@@ -1091,7 +1093,7 @@ class Model:
         #: test ̇input: tensor of size (N1, C, H, W) with values in range 0-255 that has to be denoised by the trained or the loaded network.
         #: returns a tensor of the size (N1, C, H, W) with values in range 0-255.
         test_input = test_input / 255.0
-        test_prediction = self.model(test_input).clamp(0, 1) * 255
+        test_prediction = self.model(test_input).clamp(0.0, 1.0) * 255.0
         return test_prediction
 
     def save_model(self) -> None:
@@ -1111,95 +1113,4 @@ class Model:
             model_state[module_id] = module_params
         with open(Path(__file__).parent / self.bestmodel_path, 'wb+') as handle:
             pickle.dump(model_state, handle)
-
-
-class ModelExtended(Model):
-    """
-    Extended model with a different convolutional neural network architecture.
-
-    Attributes:
-        model (Sequential): neural network.
-        optimizer (SGD): stochastic gradient descent optimizer.
-        loss_function (MSELoss): mean squared error loss.
-        bestmodel_path (Path): path to the best model file in pickle format.
-    """
-
-    def __init__(self) -> None:
-        """
-        Constructs all the model's attributes.
-        """
-        # instantiate model + optimizer + loss function + any other stuff you need
-        super(Model, self).__init__()
-        in_channels = 3
-        out_channels = 48
-        kernel_size = (3, 3)
-        stride = 2
-        padding = 1
-        output_padding = 1
-        hasBias = True
-        self.model = Sequential(# Block 1
-                                Conv2d(in_channels=in_channels,
-                                       out_channels=out_channels,
-                                       kernel_size=kernel_size, padding=padding,
-                                       bias=hasBias),
-                                ReLU(),
-                                # Conv2d(in_channels=out_channels,
-                                #        out_channels=out_channels,
-                                #        kernel_size=kernel_size, padding=padding,
-                                #        bias=hasBias),
-                                # ReLU(),
-                                Conv2d(in_channels=out_channels,
-                                       out_channels=2 * out_channels,
-                                       kernel_size=kernel_size, stride=stride,
-                                       padding=padding, bias=hasBias),
-                                # # Block 2
-                                # Conv2d(in_channels=out_channels,
-                                #        out_channels=out_channels,
-                                #        kernel_size=kernel_size, padding=padding,
-                                #        bias=hasBias),
-                                # ReLU(),
-                                # Conv2d(in_channels=out_channels,
-                                #        out_channels=2 * out_channels,
-                                #        kernel_size=kernel_size, stride=stride,
-                                #        padding=padding, bias=hasBias),
-                                # Block 3
-                                # Conv2d(in_channels=2 * out_channels,
-                                #        out_channels=2 * out_channels,
-                                #        kernel_size=kernel_size, padding=padding,
-                                #        bias=hasBias),
-                                # ReLU(),
-                                ConvTranspose2d(in_channels=2 * out_channels,
-                                                out_channels=out_channels,
-                                                kernel_size=kernel_size,
-                                                stride=stride, padding=padding,
-                                                output_padding=output_padding,
-                                                bias=hasBias),
-                                # # Block 4
-                                # Conv2d(in_channels=2 * out_channels,
-                                #        out_channels=2 * out_channels,
-                                #        kernel_size=kernel_size, padding=padding,
-                                #        bias=hasBias),
-                                # ReLU(),
-                                # ConvTranspose2d(in_channels=2 * out_channels,
-                                #                 out_channels=2 * out_channels,
-                                #                 kernel_size=kernel_size,
-                                #                 stride=stride, padding=padding,
-                                #                 output_padding=output_padding,
-                                #                 bias=hasBias),
-                                # Block 5
-                                Conv2d(in_channels=out_channels,
-                                       out_channels=32, kernel_size=kernel_size,
-                                       padding=padding, bias=hasBias),
-                                ReLU(),
-                                # Conv2d(in_channels=64, out_channels=32,
-                                #        kernel_size=kernel_size, padding=padding,
-                                #        bias=hasBias),
-                                # ReLU(),
-                                Conv2d(in_channels=32, out_channels=in_channels,
-                                       kernel_size=kernel_size, padding=padding,
-                                       bias=hasBias),
-                                )              
-        self.optimizer = SGD(params=self.model.param(), lr=0.001)
-        self.loss_function = MSELoss()
-        self.bestmodel_path = Path(__file__).parent / "bestmodel.pth"
 
