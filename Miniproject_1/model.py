@@ -60,7 +60,7 @@ class Model:
             epoch_loss = epoch_loss / len(self.train_loader)
             print(f'\nEpoch: {epoch + 1} -> train_loss: {epoch_loss} \n')
         # Save model
-        # TODO: check this
+        # TODO: save or not ?
         # torch.save(self.net.state_dict(), self.bestmodel_path)
         print("Training ended!\n")
 
