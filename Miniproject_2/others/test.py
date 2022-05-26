@@ -1,7 +1,7 @@
 import unittest
 import random
 import torch
-from .. import model
+from Miniproject_2 import model
 
 
 class ModelTests(unittest.TestCase):
