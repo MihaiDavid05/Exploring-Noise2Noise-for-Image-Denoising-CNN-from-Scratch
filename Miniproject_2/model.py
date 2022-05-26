@@ -1,16 +1,15 @@
 from torch import empty, cat, arange
 from torch.nn.functional import fold, unfold
-from torch.autograd import grad
 from collections import OrderedDict
 from pathlib import Path
 from typing import Iterable, Optional, List, Tuple, Union, Type, Iterator, Any
-import torch # for Typing and set_grad_enabled
+import torch # for Typing, disabling autograd and setting the random seed
 import random
 import pickle
 
 torch.set_grad_enabled(False)
-# torch.manual_seed(0)
-# random.seed(0)
+torch.manual_seed(0)
+random.seed(0)
 
 
 class Module(object):
@@ -710,7 +709,7 @@ class Sequential(Module):
     Container class to represent a network.
     """
 
-    def __init__(self, *args) -> None:
+    def __init__(self, *args: Union[OrderedDict, Tuple[Module, ...]]) -> None:
         """
         Constructs all the module's attributes.
 
@@ -718,7 +717,9 @@ class Sequential(Module):
         https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html
 
         Args:
-            args (*): ...
+            args (Union[OrderedDict, Tuple[Module, ...]]): an ordered dict with
+                modules and their respective names, or a tuple of modules
+                without names.
         """
         super(Sequential, self).__init__()
         if len(args) == 1 and isinstance(args[0], OrderedDict):
