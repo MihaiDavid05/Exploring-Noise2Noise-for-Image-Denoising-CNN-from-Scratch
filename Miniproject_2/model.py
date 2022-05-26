@@ -25,6 +25,7 @@ class Module(object):
         """
         Constructs all the module's attributes.
         """
+        super(Module, self).__init__()
         self._modules = OrderedDict()
 
     def __call__(self, *input: Union[torch.Tensor, Tuple[torch.Tensor, ...]]) \
@@ -60,22 +61,6 @@ class Module(object):
         elif name == '':
             raise KeyError("Module name can't be empty string \"\"")
         self._modules[name] = module
-
-    # TODO: remove?
-    # def modules(self) -> None:
-    #     """
-    #     Generator to iterate over all modules.
-    #
-    #     This implementation is based on the code from:
-    #     https://pytorch.org/docs/stable/_modules/torch/nn/modules/module.html
-    #
-    #     Yields:
-    #         Module: a module in the network.
-    #     """
-    #     yield self
-    #     for name, module in self._modules.items():
-    #         for m in module.modules():
-    #             yield m
 
     def forward(self, *input: Union[torch.Tensor, Tuple[torch.Tensor, ...]]) \
         -> Union[torch.Tensor, Tuple[torch.Tensor, ...]]:
@@ -134,12 +119,13 @@ class Module(object):
         pass
 
 
-# TODO: refactor methods for gradients wrt parameters.
 class Conv2d(Module):
     """
     Class to implement two dimensional convolution.
 
-    This implementation is based on the implementation from: TODO
+    This implementation is based on the implementation from:
+    https://github.com/cs-pub-ro/ML/blob/master/lab/lab9/Laborator_9.ipynb
+    Actually, this is an exercise session that some of us solved during college.
 
     Attributes:
         in_channels (int): number of input channels.
@@ -201,8 +187,8 @@ class Conv2d(Module):
             self.bias = None
             self.gradwrtbias = None
         self.weight = empty(self.out_channels, self.in_channels,
-                            self.kernel_size[0], self.kernel_size[1]
-                           ).uniform_(-(k ** .5), k ** .5)
+                            self.kernel_size[0], self.kernel_size[1]) \
+                            .uniform_(-(k ** .5), k ** .5)
         self.gradwrtweight = torch.empty(self.weight.size()).zero_()
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
@@ -353,7 +339,6 @@ class Conv2d(Module):
         self.gradwrtweight.zero_()
 
 
-# TODO: refactor methods for gradients wrt parameters.
 class ConvTranspose2d(Module):
     """
     Class to implement two dimensional transposed convolution.
@@ -521,7 +506,7 @@ class ConvTranspose2d(Module):
             gradwrtbias = gradwrtoutput.sum(dim=(0, 2, 3))
             self.gradwrtbias.copy_(gradwrtbias)
         # Gradient with respect to weight
-        # TODO: Unfold the gradwrtoutput matrix such that each field of view is a column
+        # Unfold the gradwrtoutput matrix such that each field of view is a column
         gradwrtoutput_unfolded = unfold(gradwrtoutput,
                                         kernel_size=self.kernel_size,
                                         dilation=self.dilation,
@@ -547,7 +532,7 @@ class ConvTranspose2d(Module):
         gradwrtweight = gradwrtweight_reshaped.reshape(self.weight.shape)
         self.gradwrtweight.copy_(gradwrtweight)
         # Gradient with respect to input
-        # TODO: Apply the convolutional filter to each field of view
+        # Apply the convolutional filter to each field of view
         weight_reshaped = self.weight.view(self.in_channels, -1)
         # weight_reshaped.shape == self.in_channels,
         #                          self.out_channels * self.kernel_size[0] * self.kernel_size[1]
@@ -582,11 +567,41 @@ class ConvTranspose2d(Module):
         self.gradwrtweight.zero_()
 
 
-# TODO: figure out what to do with the attirubtes and how to use ConvTranspose2d
-class Upsample(Module):
-    def __init__(self, size=None, scale_factor=None, mode='nearest',
-                 align_corners=None, recompute_scale_factor=None):
-        pass
+class Upsample(ConvTranspose2d):
+    """
+    Class to implement upsampling.
+
+    Wrapper over the ConvTranspose2d class.
+
+    """
+
+    def __init__(self, in_channels: int, out_channels: int,
+                 kernel_size: Union[int, Tuple[int, int]],
+                 stride: Union[int, Tuple[int, int]]=1,
+                 padding: Union[int, Tuple[int, int]]=0,
+                 output_padding: Union[int, Tuple[int, int]]=0, bias: bool=True,
+                 dilation: Union[int, Tuple[int, int]]=1) -> None:
+        """
+        Constructs all the module's attributes.
+
+        Args:
+            in_channels (int): number of input channels.
+            out_channels (int): number of output channels.
+            kernel_size (Union[int, Tuple[int, int]]): size of the kernel.
+            stride (Union[int, Tuple[int, int]]): size of the stride.
+                Default: 1.
+            padding (Union[int, Tuple[int, int]]): padding on all sides.
+                Default: 0.
+            output_padding(Union[int, Tuple[int, int]]): extra padding for
+                output. Default: 0.
+            bias (bool): whether to add a bias or not. Default: True.
+            dilation (Union[int, Tuple[int, int]]): kernel elements spacing.
+                Default: 1.
+        """
+        super(Upsample, self).__init__(in_channels, out_channels, kernel_size,
+                                       stride=stride, padding=padding,
+                                       output_padding=output_padding, bias=bias,
+                                       dilation=dilation)
 
 
 class ReLU(Module):
@@ -594,7 +609,7 @@ class ReLU(Module):
     Class to implement rectified linear unit activation function.
 
     Attributes:
-        aux (torch.Tensor): TODO: describe and rename the attribute.
+        grad (torch.Tensor): derivative of rectified linear unit.
     """
 
     def __init__(self) -> None:
@@ -613,8 +628,8 @@ class ReLU(Module):
         Returns:
             torch.Tensor: the output of the module.
         """
-        self.aux = (input > 0.0)
-        output = input * self.aux
+        self.grad = (input > 0.0)
+        output = input * self.grad
         return output
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
@@ -629,7 +644,7 @@ class ReLU(Module):
             torch.Tensor: the gradient of the loss with respect to the module's
                 input.
         """
-        gradwrtinput = gradwrtoutput * self.aux
+        gradwrtinput = gradwrtoutput * self.grad
         return gradwrtinput
 
 
@@ -638,7 +653,7 @@ class Sigmoid(Module):
     Class to implement sigmoid activation function.
 
     Attributes:
-        aux (torch.Tensor): TODO: describe and rename the attribute.
+        grad (torch.Tensor): derivative of sigmoid.
     """
 
     def __init__(self) -> None:
@@ -671,7 +686,7 @@ class Sigmoid(Module):
             torch.Tensor: the output of the module.
         """
         output = self.sigmoid(input)
-        self.aux = output * (1 - output)
+        self.grad = output * (1 - output)
         return output
 
     def backward(self, gradwrtoutput: torch.Tensor) -> torch.Tensor:
@@ -686,7 +701,7 @@ class Sigmoid(Module):
             torch.Tensor: the gradient of the loss with respect to the module's
                 input.
         """
-        gradwrtinput = gradwrtoutput * self.aux
+        gradwrtinput = gradwrtoutput * self.grad
         return gradwrtinput
 
 
@@ -697,7 +712,7 @@ class Sequential(Module):
 
     def __init__(self, *args) -> None:
         """
-        TODO
+        Constructs all the module's attributes.
 
         This implementation is based on the code from:
         https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html
@@ -739,23 +754,6 @@ class Sequential(Module):
             Iterator[Module]: network reversed iterator.
         """
         return iter(reversed(list(self._modules.values())))
-
-    # TODO: remove?
-    # def append(self, module: Module) -> Type['Sequential']:
-    #     """
-    #     Appends a module to the existing network.
-
-    #     This implementation is based on the code from:
-    #     https://pytorch.org/docs/stable/_modules/torch/nn/modules/container.html
-
-    #     Args:
-    #         module (Module): module to be appended tot the network.
-
-    #     Returns:
-    #         Sequential: this object.
-    #     """
-    #     self.add_module(str(len(self)), module)
-    #     return self
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         """
@@ -816,10 +814,6 @@ class Sequential(Module):
         for module in self._modules.values():
             module.zero_grad()
 
-    # TODO: remove
-    def layers(self, l):
-        return list(self._modules.values())[l]
-
 
 class MSELoss(Module):
     """
@@ -827,7 +821,7 @@ class MSELoss(Module):
 
     Attributes:
         reduction (string): "none" | "mean" | "sum" reduction type.
-        aux (torch.Tensor): TODO: describe and rename the attribute.
+        grad (torch.Tensor): derivative of mean squared error.
     """
 
     def __init__(self, reduction: str="mean") -> None:
@@ -840,7 +834,7 @@ class MSELoss(Module):
         """
         super(MSELoss, self).__init__()
         if not reduction in ["none", "mean", "sum"]:
-            pass # TODO: do something, throw? or set to default
+            raise TypeError(f"Invalid reduction {reduction} should be [\"none\", \"mean\", \"sum\"]")
         self.reduction = reduction
 
     def forward(self, input: torch.Tensor, target: torch.Tensor) \
@@ -855,10 +849,10 @@ class MSELoss(Module):
             torch.Tensor: the output of the module.
         """
         difference = (input - target)
-        self.aux = 2.0 * difference
+        self.grad = 2.0 * difference
         output = difference.pow(2.0)
         if self.reduction == "mean":
-            self.aux = self.aux / difference.numel()
+            self.grad = self.grad / difference.numel()
             output = output.mean()
         elif self.reduction == "sum":
             output = output.sum()
@@ -877,9 +871,9 @@ class MSELoss(Module):
                 input.
         """
         if gradwrtoutput is None and self.reduction != "none":
-            gradwrtinput = self.aux
+            gradwrtinput = self.grad
         else:
-            gradwrtinput = gradwrtoutput * self.aux
+            gradwrtinput = gradwrtoutput * self.grad
         return gradwrtinput
 
 
@@ -898,7 +892,7 @@ class SGD(Module):
         nesterov (bool): if using Nesterov. Default: False.
         maximize (bool): if the objective is to maximize the function.
             Default: False.
-        momentum_buffer (List[torch.Tensor]): TODO.
+        momentum_buffer (List[torch.Tensor]): buffer with momentums.
     """
     def __init__(self, params: List[Tuple[torch.Tensor, torch.Tensor]],
                  lr: float, momentum: float=0, dampening: float=0,
@@ -967,7 +961,7 @@ class SGD(Module):
 
 class Model:
     """
-    TODO.
+    Class to implement the model.
 
     Attributes:
         model (Sequential): neural network.
@@ -981,6 +975,7 @@ class Model:
         Constructs all the model's attributes.
         """
         # instantiate model + optimizer + loss function + any other stuff you need
+        super(Model, self).__init__()
         in_channels = 3
         out_channels = 48
         kernel_size = (3, 3)
@@ -1000,19 +995,19 @@ class Model:
                                        padding=padding,
                                        bias=hasBias),
                                 ReLU(),
-                                ConvTranspose2d(in_channels=out_channels,
-                                                out_channels=out_channels,
-                                                kernel_size=kernel_size,
-                                                stride=stride, padding=padding,
-                                                output_padding=output_padding,
-                                                bias=hasBias),
+                                Upsample(in_channels=out_channels,
+                                         out_channels=out_channels,
+                                         kernel_size=kernel_size, stride=stride,
+                                         padding=padding,
+                                         output_padding=output_padding,
+                                         bias=hasBias),
                                 ReLU(),
-                                ConvTranspose2d(in_channels=out_channels,
-                                                out_channels=in_channels,
-                                                kernel_size=kernel_size,
-                                                stride=stride, padding=padding,
-                                                output_padding=output_padding,
-                                                bias=hasBias),
+                                Upsample(in_channels=out_channels,
+                                         out_channels=in_channels,
+                                         kernel_size=kernel_size, stride=stride,
+                                         padding=padding,
+                                         output_padding=output_padding,
+                                         bias=hasBias),
                                 Sigmoid())
         self.optimizer = SGD(params=self.model.param(), lr=5)
         self.loss_function = MSELoss()
@@ -1027,7 +1022,7 @@ class Model:
             best_params = pickle.load(handle)
             # The best parameters are stored in a dictionary that maps layer id
             # to a dictionary of parameters.
-            for layer_id, layer_module in enumerate(list(self.model._modules.values())):
+            for layer_id, layer_module in enumerate(self.model):
                 layer_params = best_params[layer_id]
                 # The parameters of interest are weight and bias
                 if "weight" in layer_params:
@@ -1086,7 +1081,7 @@ class Model:
         Use the model to predict the output of a test input.
 
         Args:
-            test_input (torch.Tensor): input data set. TODO: dataset or just data?
+            test_input (torch.Tensor): input data set.
         Return:
             torch.Tensor: predicted output.
         """
@@ -1094,7 +1089,7 @@ class Model:
         #: returns a tensor of the size (N1, C, H, W) with values in range 0-255.
         test_input = test_input / 255.0
         test_prediction = self.model(test_input).clamp(0.0, 1.0) * 255.0
-        return test_prediction
+        return test_prediction.int()
 
     def save_model(self) -> None:
         """
@@ -1103,7 +1098,7 @@ class Model:
         # Iterate the list of the current sequential module
         param_iter = 0
         model_state = {}
-        for module_id, module in enumerate(self.model._modules.values()):
+        for module_id, module in enumerate(self.model):
             # Build a dictionary of parameters for each module
             module_params = {}
             if hasattr(module, 'weight'):
